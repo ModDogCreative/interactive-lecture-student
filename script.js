@@ -6,7 +6,7 @@
 		var labels = {
 			top: "Confused",
 			left: "Enlightened",
-			right: "Too Slow"
+			right: "Too Fast"
 		};
 		var canvas = document.getElementById('canvas');
 		var ctx = canvas.getContext('2d');
@@ -22,15 +22,18 @@
 		var triad = {
 			first: {
 				x: min - padding, // right
-				y: getHeight(min) - padding
+				y: getHeight(min) - padding,
+				p: 0.3
 			},
 			second: { // left
 				x: padding,
-				y: getHeight(min) - padding
+				y: getHeight(min) - padding,
+				p: 0.3
 			},
 			third: { // top
 				x: min / 2,
-				y: padding
+				y: padding,
+				p: 0.3
 			}
 		};
 
@@ -47,7 +50,7 @@
 
 		function drawTriangle() {
 
-/* 			ctx.shadowColor = '#000';
+			/* 			ctx.shadowColor = '#000';
 
  			ctx.fillStyle = "#999999";
 			//ctx.fillStyle = calculateFillColour(false);
@@ -77,7 +80,7 @@
 			shadowOff();
 		}
 
-		function shadowOn(){
+		function shadowOn() {
 			ctx.shadowColor = '#000';
 
 			ctx.shadowBlur = 6;
@@ -86,11 +89,11 @@
 			ctx.beginPath();
 		}
 
-		function shadowOff(){
+		function shadowOff() {
 			ctx.shadowColor = "rgba(0,0,0,0)";
 			ctx.shadowBlur = 0;
 			ctx.shadowOffsetX = 0;
-			ctx.shadowOffsetY = 0; 
+			ctx.shadowOffsetY = 0;
 		}
 
 		var checkIfInside = function(p, p1, p2, p3) {
@@ -116,6 +119,9 @@
 			var cNormalized = (0 <= c && c <= 1);
 
 			if (aNormalized && bNormalized && cNormalized) {
+				triad.third.p = c;
+				triad.second.p = b;
+				triad.first.p = a;
 				return {
 					x: a,
 					y: b,
@@ -153,7 +159,7 @@
 		}
 
 		var canvasDragEnd = function(ev) {
-			resizeBar();
+			//resizeBar();
 			var x = ev.changedTouches[0].pageX - canvas.offsetLeft;
 			var y = ev.changedTouches[0].pageY - canvas.offsetTop;
 
@@ -171,14 +177,14 @@
 					return;
 				shadowOn();
 				ctx.beginPath();
-				ctx.fillStyle = "#e67e22";//calculateFillColour(true);
+				ctx.fillStyle = "#e67e22"; //calculateFillColour(true);
 				ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI, false);
 				ctx.fill();
 				shadowOff();
 				ctx.beginPath();
 				ctx.strokeStyle = "#000";
 				//ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI, false);
-				
+
 				ctx.moveTo(point.x, point.y);
 				ctx.lineTo(point.x + cSize, point.y);
 				ctx.moveTo(point.x, point.y);
@@ -244,47 +250,47 @@
 				var a5 = Math.atan2(triad.third.y - triad.first.y, triad.third.x - triad.first.x);
 				var a6 = Math.atan2(triad.second.y - triad.first.y, triad.second.x - triad.first.x);
 
-				var d = (min-padding) / 7;
+				var d = (min - padding) / 2;
 
-				var px = triad.third.x + Math.cos(a1) * d;
-				var py = triad.third.y + Math.sin(a1) * d;
+				var px = triad.third.x + Math.cos(a1) * d * triad.third.p;
+				var py = triad.third.y + Math.sin(a1) * d * triad.third.p;
 
-				var px2 = triad.third.x + Math.cos(a2) * d;
-				var py2 = triad.third.y + Math.sin(a2) * d;
+				var px2 = triad.third.x + Math.cos(a2) * d * triad.third.p;
+				var py2 = triad.third.y + Math.sin(a2) * d * triad.third.p;
 
-				var px3 = triad.second.x + Math.cos(a3) * d;
-				var py3 = triad.second.y + Math.sin(a3) * d;
+				var px3 = triad.second.x + Math.cos(a3) * d * triad.second.p;
+				var py3 = triad.second.y + Math.sin(a3) * d * triad.second.p;
 
-				var px4 = triad.second.x + Math.cos(a4) * d;
-				var py4 = triad.second.y + Math.sin(a4) * d;
+				var px4 = triad.second.x + Math.cos(a4) * d * triad.second.p;
+				var py4 = triad.second.y + Math.sin(a4) * d * triad.second.p;
 
-				var px5 = triad.first.x + Math.cos(a5) * d;
-				var py5 = triad.first.y + Math.sin(a5) * d;
+				var px5 = triad.first.x + Math.cos(a5) * d * triad.first.p;
+				var py5 = triad.first.y + Math.sin(a5) * d * triad.first.p;
 
-				var px6 = triad.first.x + Math.cos(a6) * d;
-				var py6 = triad.first.y + Math.sin(a6) * d;
+				var px6 = triad.first.x + Math.cos(a6) * d * triad.first.p;
+				var py6 = triad.first.y + Math.sin(a6) * d * triad.first.p;
 
 
 
 				//ellipse(px, py, 10, 10);
 				//ellipse(px2, py2, 10, 10);
-				
+
 				triangle(triad.third.x, triad.third.y, px, py, px2, py2, "rgb(46, 204, 113)");
 
 
 				// ellipse(px3, py3, 10, 10);
 				// ellipse(px4, py4, 10, 10);
-				
+
 				triangle(triad.second.x, triad.second.y, px3, py3, px4, py4, "rgb(52, 152, 219)");
 
 				// ellipse(px5, py5, 10, 10);
 				// ellipse(px6, py6, 10, 10);
-				
+
 				triangle(triad.first.x, triad.first.y, px5, py5, px6, py6, "rgb(155, 89, 182)");
-				
+
 			}
 
-			function triangle(x1, y1, x2, y2, x3, y3, color, stroke){
+			function triangle(x1, y1, x2, y2, x3, y3, color, stroke) {
 				ctx.beginPath();
 				ctx.moveTo(x1, y1);
 				ctx.lineTo(x2, y2);
@@ -292,13 +298,14 @@
 				ctx.lineTo(x1, y1);
 				ctx.fillStyle = color;
 				ctx.fill();
-				if(typeof stroke != "undefined"){
-					ctx.strokeStyle=stroke;
+				if (typeof stroke != "undefined") {
+					ctx.strokeStyle = stroke;
 					ctx.stroke();
 				}
-					
-				
+
+
 			}
+
 			function draw() {
 				canvas.addEventListener('touchmove', canvasDrag, false);
 				//canvas.addEventListener('touchbegin', canvasDrag, false);
