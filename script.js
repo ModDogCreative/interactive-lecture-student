@@ -148,7 +148,7 @@
 
 			if (insideData != null)
 				point.x = x,
-			point.y = y;
+				point.y = y;
 			else
 				console.log("didn't move. outside");
 
@@ -167,7 +167,6 @@
 				console.log("inside");
 			else
 				console.log("outside");
-
 
 		}
 
@@ -308,7 +307,7 @@
 
 			function draw() {
 				canvas.addEventListener('touchmove', canvasDrag, false);
-				//canvas.addEventListener('touchbegin', canvasDrag, false);
+				canvas.addEventListener('touchstart', canvasDrag, false);
 				canvas.addEventListener('touchend', canvasDragEnd, false);
 				if (insideData) {
 					lastCoords = insideData;
