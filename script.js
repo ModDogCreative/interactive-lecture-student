@@ -154,19 +154,53 @@
 
 			//console.log(insideData.x * 100 + ", " + insideData.y * 100 + ", " + insideData.z * 100 + " :: " + (insideData.x + insideData.y + insideData.z));
 
+			currentStep = 0;
+			currentEndAngle = 0;
+			clearInterval(timer);
+
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			draw();
 		}
+
+		//Adjust max step (> is slower, < is faster)
+		var timer, currentStep = 0, currentEndAngle, maxStep = 32;
+
+		var progressBarUpdate = function()
+		{
+			currentStep++;
+			angleIncrement = (Math.PI * 2) / maxStep;
+
+			currentEndAngle = angleIncrement * currentStep;
+
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			draw();
+
+			if(currentStep > maxStep)
+			{
+				//When progress bar is full
+				//..
+
+				clearInterval(timer);
+				currentStep = 0;
+				currentEndAngle = 0;
+				console.log("done!");
+
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				draw();
+
+				return;
+			}
+
+			
+		};
 
 		var canvasDragEnd = function(ev) {
 			//resizeBar();
 			var x = ev.changedTouches[0].pageX - canvas.offsetLeft;
 			var y = ev.changedTouches[0].pageY - canvas.offsetTop;
 
-			if (checkIfInside(point, triad.first, triad.second, triad.third))
-				console.log("inside");
-			else
-				console.log("outside");
+
+			timer = window.setInterval(progressBarUpdate, 50);
 
 		}
 
@@ -175,15 +209,29 @@
 				if (point.x == -1 && point.y == -1)
 					return;
 				shadowOn();
+
+
+				//Progress bar
+				if(currentStep != 0)
+				{
+					ctx.beginPath();
+					ctx.strokeStyle = (currentStep == maxStep) ? ("#ff0000") : ("#ffffff");
+					ctx.lineWidth = 2;
+					ctx.arc(point.x, point.y, 24, 0, currentEndAngle, false);
+					ctx.stroke();
+				}
+
+				//Marker (orange)
 				ctx.beginPath();
 				ctx.fillStyle = "#e67e22"; //calculateFillColour(true);
 				ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI, false);
 				ctx.fill();
 				shadowOff();
+
+				//Crosshair
 				ctx.beginPath();
 				ctx.strokeStyle = "#000";
 				//ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI, false);
-
 				ctx.moveTo(point.x, point.y);
 				ctx.lineTo(point.x + cSize, point.y);
 				ctx.moveTo(point.x, point.y);
