@@ -1,0 +1,52 @@
+
+<!-- saved from url=(0042)http://muddogcreative.co.uk/test/blah.html -->
+<html ng-app="app" class="ng-scope"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}</style>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- AngularJS -->
+		<script src="./blah_files/angular.min.js"></script><style type="text/css"></style>
+
+		<!-- Firebase -->
+		<script src="./blah_files/firebase.js"></script>
+
+		<!-- AngularFire -->
+		<script src="./blah_files/angularfire.min.js"></script>
+		
+	</head>
+	
+	<body ng-controller="BlahCtrl" class="ng-scope" hola-ext-player="1">
+		<style>
+		body{ margin: 10px;
+		background:url('footer_lodyas.png')}
+		#bar{
+			width:100%;
+			height:30px;
+			background:green;
+		}
+		#bar div{
+			width:33%;
+			height:30px;
+			float:left;
+			transition: width 500ms;
+		}
+		#red{
+			background:red;
+			float:right !important;
+		}
+		#green{
+			
+		}
+		#blue{
+			background:blue;
+		}
+		</style>
+		
+		<canvas id="canvas" height="300" width="300"></canvas>
+		
+		<div id="bar">
+			<div id="blue" style="width: 2%;"></div>
+			<div id="green" style="width: 1%;"></div><div id="red" style="width: 97%;"></div>
+		</div>
+		<input type="submit" value="Submit" ng-click="sendData($event)">
+	
+	<script src="./blah_files/script.js"></script>
+</body></html>
