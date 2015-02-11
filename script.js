@@ -232,6 +232,10 @@
 				ctx.beginPath();
 				ctx.strokeStyle = "#000";
 				//ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI, false);
+<<<<<<< HEAD
+=======
+
+>>>>>>> bringing up to date
 				ctx.moveTo(point.x, point.y);
 				ctx.lineTo(point.x + cSize, point.y);
 				ctx.moveTo(point.x, point.y);
