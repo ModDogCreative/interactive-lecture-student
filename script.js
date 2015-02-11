@@ -22,15 +22,18 @@
 		var triad = {
 			first: {
 				x: min - padding, // right
-				y: getHeight(min) - padding
+				y: getHeight(min) - padding,
+				p: 0.3
 			},
 			second: { // left
 				x: padding,
-				y: getHeight(min) - padding
+				y: getHeight(min) - padding,
+				p: 0.3
 			},
 			third: { // top
 				x: min / 2,
-				y: padding
+				y: padding,
+				p: 0.3
 			}
 		};
 
@@ -116,6 +119,9 @@
 			var cNormalized = (0 <= c && c <= 1);
 
 			if (aNormalized && bNormalized && cNormalized) {
+				triad.third.p = c;
+				triad.second.p = b;
+				triad.first.p = a;
 				return {
 					x: a,
 					y: b,
@@ -244,25 +250,25 @@
 				var a5 = Math.atan2(triad.third.y - triad.first.y, triad.third.x - triad.first.x);
 				var a6 = Math.atan2(triad.second.y - triad.first.y, triad.second.x - triad.first.x);
 
-				var d = (min-padding) / 7;
+				var d = (min-padding) / 3;
 
-				var px = triad.third.x + Math.cos(a1) * d;
-				var py = triad.third.y + Math.sin(a1) * d;
+				var px = triad.third.x + Math.cos(a1) * d * triad.third.p;
+				var py = triad.third.y + Math.sin(a1) * d * triad.third.p;
 
-				var px2 = triad.third.x + Math.cos(a2) * d;
-				var py2 = triad.third.y + Math.sin(a2) * d;
+				var px2 = triad.third.x + Math.cos(a2) * d * triad.third.p;
+				var py2 = triad.third.y + Math.sin(a2) * d * triad.third.p;
 
-				var px3 = triad.second.x + Math.cos(a3) * d;
-				var py3 = triad.second.y + Math.sin(a3) * d;
+				var px3 = triad.second.x + Math.cos(a3) * d * triad.second.p;
+				var py3 = triad.second.y + Math.sin(a3) * d * triad.second.p;
 
-				var px4 = triad.second.x + Math.cos(a4) * d;
-				var py4 = triad.second.y + Math.sin(a4) * d;
+				var px4 = triad.second.x + Math.cos(a4) * d * triad.second.p;
+				var py4 = triad.second.y + Math.sin(a4) * d * triad.second.p;
 
-				var px5 = triad.first.x + Math.cos(a5) * d;
-				var py5 = triad.first.y + Math.sin(a5) * d;
+				var px5 = triad.first.x + Math.cos(a5) * d * triad.first.p;
+				var py5 = triad.first.y + Math.sin(a5) * d * triad.first.p;
 
-				var px6 = triad.first.x + Math.cos(a6) * d;
-				var py6 = triad.first.y + Math.sin(a6) * d;
+				var px6 = triad.first.x + Math.cos(a6) * d * triad.first.p;
+				var py6 = triad.first.y + Math.sin(a6) * d * triad.first.p;
 
 
 
