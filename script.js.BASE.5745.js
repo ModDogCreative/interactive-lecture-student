@@ -6,7 +6,7 @@
 		var labels = {
 			top: "Confused",
 			left: "Enlightened",
-			right: "Too Fast"
+			right: "Too Slow"
 		};
 		var canvas = document.getElementById('canvas');
 		var ctx = canvas.getContext('2d');
@@ -22,18 +22,15 @@
 		var triad = {
 			first: {
 				x: min - padding, // right
-				y: getHeight(min) - padding,
-				p: 0.3
+				y: getHeight(min) - padding
 			},
 			second: { // left
 				x: padding,
-				y: getHeight(min) - padding,
-				p: 0.3
+				y: getHeight(min) - padding
 			},
 			third: { // top
 				x: min / 2,
-				y: padding,
-				p: 0.3
+				y: padding
 			}
 		};
 
@@ -48,29 +45,9 @@
 			z: 0.34
 		}
 
-		function clamp01(value)
-		{
-		    if(value > 1)
-		        return 1;
-		    
-		    else if(value < 0)
-		        return 0;
-		        
-		    else
-		        return value;
-		}
-
-		var interpolateTriangleSide = function(from, to, mousee) {
-		    var percentY = (mousee.y - to.y) / (from.y - to.y);
-
-		    var cX = to.x + (from.x - to.x) * percentY;
-
-		    return cX;
-		};
-
 		function drawTriangle() {
 
-			/* 			ctx.shadowColor = '#000';
+/* 			ctx.shadowColor = '#000';
 
  			ctx.fillStyle = "#999999";
 			//ctx.fillStyle = calculateFillColour(false);
@@ -100,7 +77,7 @@
 			shadowOff();
 		}
 
-		function shadowOn() {
+		function shadowOn(){
 			ctx.shadowColor = '#000';
 
 			ctx.shadowBlur = 6;
@@ -109,11 +86,11 @@
 			ctx.beginPath();
 		}
 
-		function shadowOff() {
+		function shadowOff(){
 			ctx.shadowColor = "rgba(0,0,0,0)";
 			ctx.shadowBlur = 0;
 			ctx.shadowOffsetX = 0;
-			ctx.shadowOffsetY = 0;
+			ctx.shadowOffsetY = 0; 
 		}
 
 		var checkIfInside = function(p, p1, p2, p3) {
@@ -138,12 +115,7 @@
 			var bNormalized = (0 <= b && b <= 1);
 			var cNormalized = (0 <= c && c <= 1);
 
-			triad.third.p = clamp01(c);
-			triad.second.p = clamp01(b);
-			triad.first.p = clamp01(a);
-
 			if (aNormalized && bNormalized && cNormalized) {
-				
 				return {
 					x: a,
 					y: b,
@@ -170,205 +142,43 @@
 
 			if (insideData != null)
 				point.x = x,
-				point.y = y;
+			point.y = y;
 			else
-			{
-				var p = { x : x, y : y };
-
-				var first = { x : triad.first.x , y : triad.first.y };
-				var scnd  = { x : triad.second.x, y : triad.second.y };
-				var third = { x : triad.third.x , y : triad.third.y };
-
-				var baseX = first.x - scnd.x;
-				var baseY = first.y;
-
-				var left = p.x < scnd.x + (baseX / 2);
-		
-
-				if(p.y > scnd.y)
-				{
-				    //Bottom
-				    
-				    if(p.x > scnd.x && p.x < first.x)
-				    {
-				        //Bottom, middle
-				        p = {
-				            x : p.x,
-				            y : scnd.y
-				        }; 
-				    }
-				    else
-				    {
-				        //Bottom, lock to either left or right
-				        if(left)
-				        {
-				            p = {
-				                x : scnd.x,
-				                y : scnd.y
-				            };
-				        }
-				        else
-				        {
-				            p = {
-				                x : first.x,
-				                y : first.y
-				            };
-				        }     
-				    }
-				}
-				else if(p.y < third.y)
-				{
-				    //Top
-				    p = {
-				        x : third.x,
-				        y : third.y
-				    };
-				}
-				else if(p.y <= scnd.y)
-				{
-				    //Middle, interpolation
-				    var cX;
-				    
-				    if(left) {
-				        cX = interpolateTriangleSide(scnd, third, p);
-				    }
-				    else {
-				        cX = interpolateTriangleSide(first, third, p);
-				    }
-				    
-				    //println(cX + ", " + scnd.x);
-				    p.x = cX;
-				}
-
-				point.x = p.x;
-				point.y = p.y;
-
-			}
+				console.log("didn't move. outside");
 
 			//console.log(insideData.x * 100 + ", " + insideData.y * 100 + ", " + insideData.z * 100 + " :: " + (insideData.x + insideData.y + insideData.z));
 
-			currentStep = 0;
-			currentEndAngle = 0;
-			clearInterval(timer);
-
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			draw();
 		}
 
-		//Adjust max step (> is slower, < is faster)
-		var timer, currentStep = 0, currentEndAngle, maxStep = 32;
-
-		var progressBarUpdate = function()
-		{
-			currentStep++;
-			angleIncrement = (Math.PI * 2) / maxStep;
-
-			currentEndAngle = angleIncrement * currentStep;
-
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			draw();
-
-			if(currentStep > maxStep)
-			{
-				//When progress bar is full
-				//..
-
-				clearInterval(timer);
-				currentStep = 0;
-				currentEndAngle = 0;
-				console.log("done!");
-
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				draw();
-
-				return;
-			}
-
-			
-		};
-
 		var canvasDragEnd = function(ev) {
-			//resizeBar();
+			resizeBar();
 			var x = ev.changedTouches[0].pageX - canvas.offsetLeft;
 			var y = ev.changedTouches[0].pageY - canvas.offsetTop;
 
+			if (checkIfInside(point, triad.first, triad.second, triad.third))
+				console.log("inside");
+			else
+				console.log("outside");
 
-			timer = window.setInterval(progressBarUpdate, 50);
 
 		}
 
-		var colourLerp = function(from, to, at)
-		{
-			if(typeof from != "string" || typeof to != "string")
-				throw "I expected strings."
-		
-			//We don't match a 24-bit css hex colour string, so throw an error
-			if((!from.match(/^#[0-9a-f]{6,6}$/gi)) || (!to.match(/^#[0-9a-f]{6,6}$/gi)))
-				throw "I expected 24-bit colour strings: (e.g. #ff0000 for red).";
-				
-			//Reassign from and to, to discount the '#'
-			from = from.substr(1);
-			to   = to.substr(1);
-			
-			//from object, extract triplets
-			var f = 
-			{
-				r : (parseInt(from, 16) >> 16) & 0xff,
-				g : (parseInt(from, 16) >>  8) & 0xff,
-				b :  parseInt(from, 16)        & 0xff
-			};
-			
-			//to object, extract triplets
-			var t = 
-			{
-				r : (parseInt(to, 16) >> 16) & 0xff,
-				g : (parseInt(to, 16) >>  8) & 0xff,
-				b :  parseInt(to, 16)        & 0xff
-			};
-			
-			//Calculated rgb lerp object, floor using linear interpolation between each triplet
-			var c = 
-			{
-				r : Math.floor(f.r + (t.r - f.r) * at),
-				g : Math.floor(f.g + (t.g - f.g) * at),
-				b : Math.floor(f.b + (t.b - f.b) * at)
-			};
-			
-			//Zero padd hex if needed to maintain 24 bit ordering
-			var hexf = function(input) { return ("0" + input.toString(16)).substr(-2); };
-			
-			//And return a css 24 bit hex colour string
-			return "#" + hexf(c.r) +  hexf(c.g) + hexf(c.b);
-		};
-		
 			function drawPoint() {
 				var cSize = 5;
 				if (point.x == -1 && point.y == -1)
 					return;
 				shadowOn();
-
-
-				//Progress bar
-				if(currentStep != 0)
-				{
-					ctx.beginPath();
-					ctx.strokeStyle = colourLerp('#ffffff', '#e74c3c', currentStep / maxStep);
-					ctx.lineWidth = 3;
-					ctx.arc(point.x, point.y, 24, 0, currentEndAngle, false);
-					ctx.stroke();
-				}
-
-				//Marker (orange)
 				ctx.beginPath();
-				ctx.fillStyle = "#e67e22"; //calculateFillColour(true);
+				ctx.fillStyle = "#e67e22";//calculateFillColour(true);
 				ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI, false);
 				ctx.fill();
 				shadowOff();
-
-				//Crosshair
 				ctx.beginPath();
 				ctx.strokeStyle = "#000";
 				//ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI, false);
+				
 				ctx.moveTo(point.x, point.y);
 				ctx.lineTo(point.x + cSize, point.y);
 				ctx.moveTo(point.x, point.y);
@@ -434,46 +244,47 @@
 				var a5 = Math.atan2(triad.third.y - triad.first.y, triad.third.x - triad.first.x);
 				var a6 = Math.atan2(triad.second.y - triad.first.y, triad.second.x - triad.first.x);
 
-				var d = (min - padding) / 2;
+				var d = (min-padding) / 7;
 
-				var px = triad.third.x + Math.cos(a1) * d * triad.third.p;
-				var py = triad.third.y + Math.sin(a1) * d * triad.third.p;
+				var px = triad.third.x + Math.cos(a1) * d;
+				var py = triad.third.y + Math.sin(a1) * d;
 
-				var px2 = triad.third.x + Math.cos(a2) * d * triad.third.p;
-				var py2 = triad.third.y + Math.sin(a2) * d * triad.third.p;
+				var px2 = triad.third.x + Math.cos(a2) * d;
+				var py2 = triad.third.y + Math.sin(a2) * d;
 
-				var px3 = triad.second.x + Math.cos(a3) * d * triad.second.p;
-				var py3 = triad.second.y + Math.sin(a3) * d * triad.second.p;
+				var px3 = triad.second.x + Math.cos(a3) * d;
+				var py3 = triad.second.y + Math.sin(a3) * d;
 
-				var px4 = triad.second.x + Math.cos(a4) * d * triad.second.p;
-				var py4 = triad.second.y + Math.sin(a4) * d * triad.second.p;
+				var px4 = triad.second.x + Math.cos(a4) * d;
+				var py4 = triad.second.y + Math.sin(a4) * d;
 
-				var px5 = triad.first.x + Math.cos(a5) * d * triad.first.p;
-				var py5 = triad.first.y + Math.sin(a5) * d * triad.first.p;
+				var px5 = triad.first.x + Math.cos(a5) * d;
+				var py5 = triad.first.y + Math.sin(a5) * d;
 
-				var px6 = triad.first.x + Math.cos(a6) * d * triad.first.p;
-				var py6 = triad.first.y + Math.sin(a6) * d * triad.first.p;
+				var px6 = triad.first.x + Math.cos(a6) * d;
+				var py6 = triad.first.y + Math.sin(a6) * d;
+
 
 
 				//ellipse(px, py, 10, 10);
 				//ellipse(px2, py2, 10, 10);
-
+				
 				triangle(triad.third.x, triad.third.y, px, py, px2, py2, "rgb(46, 204, 113)");
 
 
 				// ellipse(px3, py3, 10, 10);
 				// ellipse(px4, py4, 10, 10);
-
+				
 				triangle(triad.second.x, triad.second.y, px3, py3, px4, py4, "rgb(52, 152, 219)");
 
 				// ellipse(px5, py5, 10, 10);
 				// ellipse(px6, py6, 10, 10);
-
+				
 				triangle(triad.first.x, triad.first.y, px5, py5, px6, py6, "rgb(155, 89, 182)");
-
+				
 			}
 
-			function triangle(x1, y1, x2, y2, x3, y3, color, stroke) {
+			function triangle(x1, y1, x2, y2, x3, y3, color, stroke){
 				ctx.beginPath();
 				ctx.moveTo(x1, y1);
 				ctx.lineTo(x2, y2);
@@ -481,17 +292,16 @@
 				ctx.lineTo(x1, y1);
 				ctx.fillStyle = color;
 				ctx.fill();
-				if (typeof stroke != "undefined") {
-					ctx.strokeStyle = stroke;
+				if(typeof stroke != "undefined"){
+					ctx.strokeStyle=stroke;
 					ctx.stroke();
 				}
-
-
+					
+				
 			}
-
 			function draw() {
 				canvas.addEventListener('touchmove', canvasDrag, false);
-				canvas.addEventListener('touchstart', canvasDrag, false);
+				//canvas.addEventListener('touchbegin', canvasDrag, false);
 				canvas.addEventListener('touchend', canvasDragEnd, false);
 				if (insideData) {
 					lastCoords = insideData;

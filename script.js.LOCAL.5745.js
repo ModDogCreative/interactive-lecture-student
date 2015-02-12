@@ -48,26 +48,6 @@
 			z: 0.34
 		}
 
-		function clamp01(value)
-		{
-		    if(value > 1)
-		        return 1;
-		    
-		    else if(value < 0)
-		        return 0;
-		        
-		    else
-		        return value;
-		}
-
-		var interpolateTriangleSide = function(from, to, mousee) {
-		    var percentY = (mousee.y - to.y) / (from.y - to.y);
-
-		    var cX = to.x + (from.x - to.x) * percentY;
-
-		    return cX;
-		};
-
 		function drawTriangle() {
 
 			/* 			ctx.shadowColor = '#000';
@@ -138,12 +118,10 @@
 			var bNormalized = (0 <= b && b <= 1);
 			var cNormalized = (0 <= c && c <= 1);
 
-			triad.third.p = clamp01(c);
-			triad.second.p = clamp01(b);
-			triad.first.p = clamp01(a);
-
 			if (aNormalized && bNormalized && cNormalized) {
-				
+				triad.third.p = c;
+				triad.second.p = b;
+				triad.first.p = a;
 				return {
 					x: a,
 					y: b,
@@ -172,78 +150,7 @@
 				point.x = x,
 				point.y = y;
 			else
-			{
-				var p = { x : x, y : y };
-
-				var first = { x : triad.first.x , y : triad.first.y };
-				var scnd  = { x : triad.second.x, y : triad.second.y };
-				var third = { x : triad.third.x , y : triad.third.y };
-
-				var baseX = first.x - scnd.x;
-				var baseY = first.y;
-
-				var left = p.x < scnd.x + (baseX / 2);
-		
-
-				if(p.y > scnd.y)
-				{
-				    //Bottom
-				    
-				    if(p.x > scnd.x && p.x < first.x)
-				    {
-				        //Bottom, middle
-				        p = {
-				            x : p.x,
-				            y : scnd.y
-				        }; 
-				    }
-				    else
-				    {
-				        //Bottom, lock to either left or right
-				        if(left)
-				        {
-				            p = {
-				                x : scnd.x,
-				                y : scnd.y
-				            };
-				        }
-				        else
-				        {
-				            p = {
-				                x : first.x,
-				                y : first.y
-				            };
-				        }     
-				    }
-				}
-				else if(p.y < third.y)
-				{
-				    //Top
-				    p = {
-				        x : third.x,
-				        y : third.y
-				    };
-				}
-				else if(p.y <= scnd.y)
-				{
-				    //Middle, interpolation
-				    var cX;
-				    
-				    if(left) {
-				        cX = interpolateTriangleSide(scnd, third, p);
-				    }
-				    else {
-				        cX = interpolateTriangleSide(first, third, p);
-				    }
-				    
-				    //println(cX + ", " + scnd.x);
-				    p.x = cX;
-				}
-
-				point.x = p.x;
-				point.y = p.y;
-
-			}
+				console.log("didn't move. outside");
 
 			//console.log(insideData.x * 100 + ", " + insideData.y * 100 + ", " + insideData.z * 100 + " :: " + (insideData.x + insideData.y + insideData.z));
 
@@ -297,50 +204,6 @@
 
 		}
 
-		var colourLerp = function(from, to, at)
-		{
-			if(typeof from != "string" || typeof to != "string")
-				throw "I expected strings."
-		
-			//We don't match a 24-bit css hex colour string, so throw an error
-			if((!from.match(/^#[0-9a-f]{6,6}$/gi)) || (!to.match(/^#[0-9a-f]{6,6}$/gi)))
-				throw "I expected 24-bit colour strings: (e.g. #ff0000 for red).";
-				
-			//Reassign from and to, to discount the '#'
-			from = from.substr(1);
-			to   = to.substr(1);
-			
-			//from object, extract triplets
-			var f = 
-			{
-				r : (parseInt(from, 16) >> 16) & 0xff,
-				g : (parseInt(from, 16) >>  8) & 0xff,
-				b :  parseInt(from, 16)        & 0xff
-			};
-			
-			//to object, extract triplets
-			var t = 
-			{
-				r : (parseInt(to, 16) >> 16) & 0xff,
-				g : (parseInt(to, 16) >>  8) & 0xff,
-				b :  parseInt(to, 16)        & 0xff
-			};
-			
-			//Calculated rgb lerp object, floor using linear interpolation between each triplet
-			var c = 
-			{
-				r : Math.floor(f.r + (t.r - f.r) * at),
-				g : Math.floor(f.g + (t.g - f.g) * at),
-				b : Math.floor(f.b + (t.b - f.b) * at)
-			};
-			
-			//Zero padd hex if needed to maintain 24 bit ordering
-			var hexf = function(input) { return ("0" + input.toString(16)).substr(-2); };
-			
-			//And return a css 24 bit hex colour string
-			return "#" + hexf(c.r) +  hexf(c.g) + hexf(c.b);
-		};
-		
 			function drawPoint() {
 				var cSize = 5;
 				if (point.x == -1 && point.y == -1)
@@ -352,8 +215,8 @@
 				if(currentStep != 0)
 				{
 					ctx.beginPath();
-					ctx.strokeStyle = colourLerp('#ffffff', '#e74c3c', currentStep / maxStep);
-					ctx.lineWidth = 3;
+					ctx.strokeStyle = (currentStep == maxStep) ? ("#ff0000") : ("#ffffff");
+					ctx.lineWidth = 2;
 					ctx.arc(point.x, point.y, 24, 0, currentEndAngle, false);
 					ctx.stroke();
 				}
@@ -453,6 +316,7 @@
 
 				var px6 = triad.first.x + Math.cos(a6) * d * triad.first.p;
 				var py6 = triad.first.y + Math.sin(a6) * d * triad.first.p;
+
 
 
 				//ellipse(px, py, 10, 10);
