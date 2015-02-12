@@ -204,6 +204,50 @@
 
 		}
 
+		var colourLerp = function(from, to, at)
+		{
+			if(typeof from != "string" || typeof to != "string")
+				throw "I expected strings."
+		
+			//We don't match a 24-bit css hex colour string, so throw an error
+			if((!from.match(/^#[0-9a-f]{6,6}$/gi)) || (!to.match(/^#[0-9a-f]{6,6}$/gi)))
+				throw "I expected 24-bit colour strings: (e.g. #ff0000 for red).";
+				
+			//Reassign from and to, to discount the '#'
+			from = from.substr(1);
+			to   = to.substr(1);
+			
+			//from object, extract triplets
+			var f = 
+			{
+				r : (parseInt(from, 16) >> 16) & 0xff,
+				g : (parseInt(from, 16) >>  8) & 0xff,
+				b :  parseInt(from, 16)        & 0xff
+			};
+			
+			//to object, extract triplets
+			var t = 
+			{
+				r : (parseInt(to, 16) >> 16) & 0xff,
+				g : (parseInt(to, 16) >>  8) & 0xff,
+				b :  parseInt(to, 16)        & 0xff
+			};
+			
+			//Calculated rgb lerp object, floor using linear interpolation between each triplet
+			var c = 
+			{
+				r : Math.floor(f.r + (t.r - f.r) * at),
+				g : Math.floor(f.g + (t.g - f.g) * at),
+				b : Math.floor(f.b + (t.b - f.b) * at)
+			};
+			
+			//Zero padd hex if needed to maintain 24 bit ordering
+			var hexf = function(input) { return ("0" + input.toString(16)).substr(-2); };
+			
+			//And return a css 24 bit hex colour string
+			return "#" + hexf(c.r) +  hexf(c.g) + hexf(c.b);
+		};
+		
 			function drawPoint() {
 				var cSize = 5;
 				if (point.x == -1 && point.y == -1)
@@ -215,8 +259,8 @@
 				if(currentStep != 0)
 				{
 					ctx.beginPath();
-					ctx.strokeStyle = (currentStep == maxStep) ? ("#ff0000") : ("#ffffff");
-					ctx.lineWidth = 2;
+					ctx.strokeStyle = colourLerp('#ffffff', '#e74c3c', currentStep / maxStep);
+					ctx.lineWidth = 3;
 					ctx.arc(point.x, point.y, 24, 0, currentEndAngle, false);
 					ctx.stroke();
 				}
